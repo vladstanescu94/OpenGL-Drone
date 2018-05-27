@@ -15,13 +15,52 @@ GLUnurbsObj *theNurb1;
 GLUnurbsObj *theNurb2;
 GLUquadric* qobj;
 
+int bladeAngle = 90;
+int bladeSpeed = 0;
+static int tilt = 0, velocity = 0;
+
 void CALLBACK IdleFunction(void);
+void CALLBACK tiltLeft(void);
+void CALLBACK tiltRight(void);
+void CALLBACK droneUp(void);
+void CALLBACK droneDown(void);
+
+void CALLBACK tiltLeft(void)
+{
+	tilt = (tilt + 5) % 360;
+}
+
+void CALLBACK tiltRight(void)
+{
+	tilt = (tilt - 5) % 360;
+}
+
+void CALLBACK droneUp(void)
+{
+	if(bladeSpeed >0)
+	velocity = (velocity + 1) % 360;
+}
+
+void CALLBACK droneDown(void)
+{
+	if (bladeSpeed >0)
+	velocity = (velocity - 1) % 360;
+}
+
+
 
 void CALLBACK IdleFunction(void)
 {
-	glRotatef(30, 0, 1, 0);
+
+	if (GetKeyState(VK_SPACE)) {
+		bladeSpeed++;
+	}
+	else
+	{
+		bladeSpeed = 0;
+	}
+	bladeAngle = (bladeAngle +bladeSpeed)%360;
 	display();
-	Sleep(100);
 }
 
 void init_surface1(void)
@@ -80,6 +119,8 @@ void myinit(void)
 	qobj = gluNewQuadric();
 	gluQuadricNormals(qobj, GLU_SMOOTH);
 
+	
+
     glMaterialfv(GL_FRONT, GL_AMBIENT, mat_ambient);
     glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);
     glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
@@ -119,16 +160,44 @@ void CALLBACK display(void)
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glPushMatrix();
-	//glRotatef(50, 1, 0, 0);
-	//glTranslatef(0, -2, 0);
-	//Drone Body
+	glRotatef(tilt, 0, 0, 1);
+	//glRotatef(-30, 1, 0, 0);
+	glTranslatef(0, velocity,0 );
+
+	//Drone Arms
 	glPushMatrix();
 	glTranslatef(-1,1,-3);
 	glRotatef(-65, 1., 0., 0.);
 	gluCylinder(qobj, .1, .1, .75, 10,1);
+	glTranslatef(0,0,0.75);
+	glRotatef(bladeAngle, 0., 0., 1);
+	gluPartialDisk(qobj, 0.1, .3, 360, 1, 0, 90);
+	glRotatef(-bladeAngle, 0., 0., 1);
+	glTranslatef(0, 0, -0.75);
 	glTranslatef(2, 0, 0);
 	gluCylinder(qobj, .1, .1, .75, 10, 1);
+	glTranslatef(0, 0, 0.75);
+	glRotatef(bladeAngle, 0., 0., 1);
+	gluPartialDisk(qobj, 0.1, .3, 360, 1, 0, 90);
+	glRotatef(-bladeAngle, 0., 0., 1);
+	glTranslatef(0, 0, -0.75);
+	glTranslatef(0, -2.5, 0);
+	gluCylinder(qobj, .1, .1, .75, 10, 1);
+	glTranslatef(0, 0, 0.75);
+	glRotatef(bladeAngle, 0., 0., 1);
+	gluPartialDisk(qobj, 0.1, .3, 360, 1, 0, 90);
+	glRotatef(-bladeAngle, 0., 0., 1);
+	glTranslatef(0, 0, -0.75);
+	glTranslatef(-2, 0, 0);
+	gluCylinder(qobj, .1, .1, .75, 10, 1);
+	glTranslatef(0, 0, 0.75);
+	glRotatef(bladeAngle, 0., 0., 1);
+	gluPartialDisk(qobj, 0.1, .3, 360, 1, 0, 90);
+	glRotatef(-bladeAngle, 0., 0., 1);
+	glTranslatef(0, 0, -0.75);
 	glPopMatrix();
+
+	////Drone Body
 	glPushMatrix();
 	glRotatef(-65, 1., 0., 0.);
 	glScalef(0.5, 0.5, 0.5);
@@ -160,6 +229,7 @@ void CALLBACK display(void)
 	gluEndSurface(theNurb2);
 
 	glPopMatrix();//end Drone Body
+
 	glPopMatrix();
 	glFlush();
 }
@@ -183,8 +253,13 @@ int main(int argc, char** argv)
     auxInitPosition (0, 0, 500, 500);
     auxInitWindow ("ProiectGrafica");
     myinit();
-	//auxIdleFunc(IdleFunction);
+	auxIdleFunc(IdleFunction);
+	auxKeyFunc(AUX_LEFT, tiltLeft);
+	auxKeyFunc(AUX_RIGHT, tiltRight);
+	auxKeyFunc(AUX_UP, droneUp);
+	auxKeyFunc(AUX_DOWN, droneDown);
     auxReshapeFunc (myReshape);
     auxMainLoop(display);
+	gluDeleteQuadric(qobj);
     return(0);
 }

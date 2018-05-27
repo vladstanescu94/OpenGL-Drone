@@ -1,1 +1,5 @@
-﻿  ProiectGrafica.vcxproj -> D:\Projects\ProiectGrafica\Debug\ProiectGrafica.exe
+﻿  Drona.c
+d:\projects\proiectgrafica\proiectgrafica\drona.c(104): warning C4305: 'initializing': truncation from 'double' to 'GLfloat'
+d:\projects\proiectgrafica\proiectgrafica\drona.c(105): warning C4305: 'initializing': truncation from 'double' to 'GLfloat'
+d:\projects\proiectgrafica\proiectgrafica\drona.c(117): warning C4305: 'initializing': truncation from 'double' to 'GLfloat'
+  ProiectGrafica.vcxproj -> D:\Projects\ProiectGrafica\Debug\ProiectGrafica.exe
