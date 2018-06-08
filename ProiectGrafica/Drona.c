@@ -17,7 +17,8 @@ GLUquadric* qobj;
 
 int bladeAngle = 90;
 int bladeSpeed = 0;
-static int tilt = 0, velocity = 0;
+static int tilt = 0;
+static float velocity = 0;
 
 void CALLBACK IdleFunction(void);
 void CALLBACK tiltLeft(void);
@@ -27,24 +28,24 @@ void CALLBACK droneDown(void);
 
 void CALLBACK tiltLeft(void)
 {
-	tilt = (tilt + 5) % 360;
+	tilt = (tilt + 2) % 360;
 }
 
 void CALLBACK tiltRight(void)
 {
-	tilt = (tilt - 5) % 360;
+	tilt = (tilt - 2) % 360;
 }
 
 void CALLBACK droneUp(void)
 {
-	if(bladeSpeed >0)
-	velocity = (velocity + 1) % 360;
+	if (bladeSpeed > 0)
+		velocity = velocity + 0.05;
 }
 
 void CALLBACK droneDown(void)
 {
-	if (bladeSpeed >0)
-	velocity = (velocity - 1) % 360;
+	if (bladeSpeed > 0)
+		velocity = velocity - 0.05;
 }
 
 
@@ -140,6 +141,7 @@ void myinit(void)
     glEnable(GL_DEPTH_TEST);
 	glEnable(GL_AUTO_NORMAL);
 	glEnable(GL_NORMALIZE);
+	glEnable(GL_COLOR_MATERIAL);
 
 	init_surface1();
 	init_surface2();
@@ -159,6 +161,7 @@ void CALLBACK display(void)
 	GLfloat knots[8] = { 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0 };
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClearColor(0,0,10,0.2);
 	glPushMatrix();
 	glRotatef(tilt, 0, 0, 1);
 	//glRotatef(-30, 1, 0, 0);
@@ -166,43 +169,62 @@ void CALLBACK display(void)
 
 	//Drone Arms
 	glPushMatrix();
+
+	//Arm 1
 	glTranslatef(-1,1,-3);
 	glRotatef(-65, 1., 0., 0.);
 	gluCylinder(qobj, .1, .1, .75, 10,1);
 	glTranslatef(0,0,0.75);
 	glRotatef(bladeAngle, 0., 0., 1);
+	glColor3f(1,0,0);
 	gluPartialDisk(qobj, 0.1, .3, 360, 1, 0, 90);
+	glColor3f(1, 1, 1);
 	glRotatef(-bladeAngle, 0., 0., 1);
 	glTranslatef(0, 0, -0.75);
+
+	//Arm 2
 	glTranslatef(2, 0, 0);
 	gluCylinder(qobj, .1, .1, .75, 10, 1);
 	glTranslatef(0, 0, 0.75);
 	glRotatef(bladeAngle, 0., 0., 1);
+	glColor3f(0, 1, 0);
 	gluPartialDisk(qobj, 0.1, .3, 360, 1, 0, 90);
+	glColor3f(1, 1, 1);
 	glRotatef(-bladeAngle, 0., 0., 1);
 	glTranslatef(0, 0, -0.75);
+
+	//Arm 3
 	glTranslatef(0, -2.5, 0);
 	gluCylinder(qobj, .1, .1, .75, 10, 1);
 	glTranslatef(0, 0, 0.75);
 	glRotatef(bladeAngle, 0., 0., 1);
+	glColor3f(1, 0, 1);
 	gluPartialDisk(qobj, 0.1, .3, 360, 1, 0, 90);
+	glColor3f(1, 1, 1);
 	glRotatef(-bladeAngle, 0., 0., 1);
 	glTranslatef(0, 0, -0.75);
+
+	//Arm 4
 	glTranslatef(-2, 0, 0);
 	gluCylinder(qobj, .1, .1, .75, 10, 1);
 	glTranslatef(0, 0, 0.75);
 	glRotatef(bladeAngle, 0., 0., 1);
+	glColor3f(1, 1, 0);
 	gluPartialDisk(qobj, 0.1, .3, 360, 1, 0, 90);
+	glColor3f(1, 1,1 );
 	glRotatef(-bladeAngle, 0., 0., 1);
 	glTranslatef(0, 0, -0.75);
+
 	glPopMatrix();
 
 	////Drone Body
 	glPushMatrix();
+	glColor3f(0.8,0.8,0.8);
 	glRotatef(-65, 1., 0., 0.);
 	glScalef(0.5, 0.5, 0.5);
 	glTranslatef(0,4,0);
 
+	//Front Surface
 	gluBeginSurface(theNurb1);
 	gluNurbsSurface(theNurb1,
 		8, knots,
@@ -214,6 +236,7 @@ void CALLBACK display(void)
 		GL_MAP2_VERTEX_3);
 	gluEndSurface(theNurb1);
 
+	//Back Surface
 	glRotatef(180, 0., 1., 0.);
 	glTranslatef(0, 0, 2);
 
